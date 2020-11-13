@@ -105,24 +105,22 @@ router.get('/range', async function (req, res) {
 });
 
 router.get('/last', async function (req, res) {
-    const llaves = [];
-    const valoresAceptados = /^[0-9]+$/;
-    client.keys('*', function (err, keys) {
+    client.get("index", function (err, value) {
         if (err) return console.log(err);
 
-        for (var i = 0, len = keys.length; i < len; i++) {
-            if (keys[i].match(valoresAceptados))
-                llaves.push(keys[i])
-        }
-        if (llaves.length > 0) {
-            client.get(llaves[llaves.length - 1], function (err, value) {
+        if (value !== null) {
+            client.get(value, function (err, val) {
                 if (err) return console.log(err);
                 res.json({
-                    value
+                    value: val
                 });
             })
+        } else {
+            res.json({
+                value: 1
+            });
         }
-    });
+    })
 });
 
 app.all('/api*', function (req, res, next) {
